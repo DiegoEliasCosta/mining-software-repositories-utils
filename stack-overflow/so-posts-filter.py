@@ -62,7 +62,7 @@ def filter_post(file, output, title, tag):
         context = iter(etree.iterparse(file))
         _, root = next(context)
 
-        for event, elem in context:
+        for _, elem in context:
             if isQuestion(elem):
                 inspectQuestion(elem, outputFile, tag, title)
             else:
