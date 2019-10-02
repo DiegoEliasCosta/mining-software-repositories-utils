@@ -10,7 +10,8 @@ from github import Github
 @click.argument("password", required=1)
 @click.option("--n_pages", default=35, help="The number of pages the request will go over (typically 33) as Github has a limit of 1000 results")
 @click.option("--language", default="java", help="The target programming language")
-def find_1k_most_starred_repos(username, password, n_pages, language):
+@click.option("--output", default=".", help="The directory where the output will be saved")
+def find_1k_most_starred_repos(username, password, n_pages, language, output):
     """ Find the most starred repositories using an authenticated GiHub USERNAME and PASSWORD """
 
 
@@ -37,11 +38,22 @@ def find_1k_most_starred_repos(username, password, n_pages, language):
             else:
                 print('{page} Page Requested failed'.format(page=page))
 
-            time.sleep(.1)
+            sleep_random()
     pass
 
-    df.to_csv(os.path.join('top-1kmoststarred-{language}-projects.csv'.format(language=language)))
+    # We pickle first in case we find some issues with converting to JSON  
+    # such as non-unique indexes
+    df.to_pickle(os.path.join(output, '1kmoststarred-{language}-projects.pickle'.format(language=language)))
 
+    # Making sure we 
+    df.reset_index(inplace=True)
+    df.to_json(os.path.join(output, '1kmoststarred-{language}-projects.json'.format(language=language)))
+
+
+def sleep_random():
+    from random import randint
+    from time import sleep
+    sleep(randint(1,7))
 
 
 if __name__ == "__main__":
