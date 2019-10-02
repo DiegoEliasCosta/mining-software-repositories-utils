@@ -2,7 +2,9 @@ import os
 import click
 from git import Repo
 import pandas as pd
+from tqdm import tqdm
 
+counter = 1
 
 def clone_repository(df, output):
     """
@@ -18,7 +20,9 @@ def clone_repository(df, output):
     # the repo has already beeing cloned
     if not os.path.exists(project_folder):
         os.makedirs(project_folder)
-        click.echo("Cloning the project %s" % project_folder)
+        global counter
+        click.echo("Cloning the %d project %s" % (counter, project_folder))
+        counter += 1
         
         try:
             # Clone the repository
@@ -36,12 +40,17 @@ def repo_cloner(file_name, output):
 
 
     # Create the dataframe with the content from the JSON returned by GitHub API
-    dataset = pd.read_json(file_name, encoding='ISO-8859-1')
+    #dataset = pd.read_json(file_name, encoding='ISO-8859-1')
+    dataset = pd.read_pickle(file_name)
+
+    # Register `pandas.progress_apply` and `pandas.Series.map_apply` with `tqdm`
+    # (can use `tqdm_gui`, `tqdm_notebook`, optional kwargs, etc.)
+    tqdm.pandas(desc="Progress bar")
 
     projects = pd.DataFrame(dataset['items'])
     
     # Clone the repository for each row of url in the dataframe
-    projects.apply(clone_repository, axis=1, args=(output, ))        
+    projects.progress_apply(clone_repository, axis=1, args=(output, ))        
     
     pass
 
