@@ -25,12 +25,15 @@ def import_sql_lite(csv_dir, version, output):
     cursor = conn.cursor() 
 
     tables = [
-        Table("projects-%s.csv" % version, "PROJECTS"),
-
+        Table("projects_with_repository_fields-%s.csv" % version, "PROJECTS_REPO"),
         # Repositories CSV file have misaligned Header + content
         # We need to enforce Pandas to disconsider the index otherwise
         # the df will pick ID as the index and shift all columns to the right
-        Table("repositories-%s.csv" % version, "REPOSITORIES"),
+        
+        # Also, typically these two tables are not needed
+        #Table("projects-%s.csv" % version, "PROJECTS"),
+        #Table("repositories-%s.csv" % version, "REPOSITORIES"),
+        # ------------------------------
         Table("versions-%s.csv" % version, "VERSIONS"),
         Table("dependencies-%s.csv" % version, "DEPENDENCIES"),
         Table("repository_dependencies-%s.csv" % version, "REPOSITORY_DEPENDENCIES"),
@@ -46,7 +49,7 @@ def import_sql_lite(csv_dir, version, output):
             print('Chunk finished - ID: %d' % chunk.iloc[0].ID)
 
 
-    print('Creating all UNIQUE ID indexes')
+    # print('Creating all UNIQUE ID indexes')
     cursor.execute("CREATE UNIQUE INDEX id_projects ON PROJECTS (ID)")
     cursor.execute("CREATE UNIQUE INDEX id_repositories ON REPOSITORIES (ID)")
     cursor.execute("CREATE UNIQUE INDEX id_versions ON VERSIONS (ID)")
@@ -56,7 +59,7 @@ def import_sql_lite(csv_dir, version, output):
 
     #%%
     # Check all tables
-    all = conn.execute("SELECT name FROM sqlite_master WHERE type='table'")
+    all = cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
     print('Showing the schema of the database')
     print(all.fetchall())
     
