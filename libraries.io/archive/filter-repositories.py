@@ -9,7 +9,6 @@ output_path = '../../data/libraries.io/libraries-1.4.0-2018-12-22/go'
 
 #%%
 # Loading the Projects dataset
-
 projects_path = 'projects-1.4.0-2018-12-22.csv'
 projects_df = pd.read_csv(os.path.join(data_path, projects_path), index_col='ID')
 print("Libraries.io dataset contains %d projects" % len(projects_df))
@@ -38,17 +37,13 @@ repositories_df = pd.read_csv(os.path.join(data_path, repositories_path), usecol
     'SourceRank'], index_col=False)
 
 
-#%%
-# CHecking all languages in the repo
-repositories_df.head()
+
 
 #%%
 # Filtering by the language
 go_repositories_df = repositories_df[repositories_df.Language == 'Go']
 
-#%%
-# Free the memory of all repositories before the merge
-del repositories_df
+
 
 #%%
 # Merging Go projects + versions

@@ -40,8 +40,8 @@ def repo_cloner(file_name, output):
 
 
     # Create the dataframe with the content from the JSON returned by GitHub API
-    #dataset = pd.read_json(file_name, encoding='ISO-8859-1')
-    dataset = pd.read_pickle(file_name)
+    dataset = pd.read_json(file_name)
+    #dataset = pd.read_pickle(file_name)
 
     # Register `pandas.progress_apply` and `pandas.Series.map_apply` with `tqdm`
     # (can use `tqdm_gui`, `tqdm_notebook`, optional kwargs, etc.)
