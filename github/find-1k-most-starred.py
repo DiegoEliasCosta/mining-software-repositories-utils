@@ -26,8 +26,6 @@ def find_most_starred_repos(username, password, max_stars, n_pages, language, ou
 
     go_url = "https://api.github.com/search/repositories?q=language:{language}+stars:1..{max_stars}&sort=stars&order=desc&page={page}"
 
-    
-
     df = pd.DataFrame()
 
     for page in range(1, n_pages):
