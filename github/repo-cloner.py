@@ -27,6 +27,11 @@ def clone_repository(df, output):
         try:
             # Clone the repository
             Repo.clone_from(git_url, project_folder)
+
+        # Making sure we dont prevent the application from finishing when pressing Ctrl + C
+        except KeyboardInterrupt as e: 
+            raise e
+
         except:
             click.echo("Error while trying to clone the repository %s" % git_url)
         
