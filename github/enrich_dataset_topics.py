@@ -13,7 +13,6 @@ from time import sleep
 
 def sleep_random(max):
     from random import randint
-
     sleep(randint(1,max))
 
 
@@ -99,7 +98,7 @@ def add_topics_readme(df, github, sleep):
 @click.argument("output_file", required=1)
 @click.argument("user", required=1)
 @click.argument("password", required=1)
-@click.option("--split", default=10, help="As GitHub has a limit of 5000, we can split the processing into buckets and process each bucket in an hour")
+@click.option("--split", default=1, help="As GitHub has a limit of 5000, we can split the processing into buckets and process each bucket in an hour")
 #@click.option('--sleep', default=2, help='How long to sleep in between requests to bypass network security.')
 def enrich_project_description(input_file, output_file, user, password, split):
 
@@ -116,8 +115,8 @@ def enrich_project_description(input_file, output_file, user, password, split):
 
     tqdm.pandas()
 
-    print('Splitting projects into buckets of size %d' % split)
-    dfs = np.split(projects_df, [split], axis=0)
+    dfs = np.array_split(projects_df, split)
+    print('Splitting projects into buckets of size %d' % len(dfs[0]))
 
     for idx, df in enumerate(dfs):
 
@@ -130,7 +129,8 @@ def enrich_project_description(input_file, output_file, user, password, split):
         output_df.to_csv(output_file_name, index=False)
 
         # This should sleep for slightly more than an hour
-        sleep(10)
+        HOUR = 60 * 60
+        sleep(HOUR + 30)
     pass
 
 if __name__ == "__main__":
