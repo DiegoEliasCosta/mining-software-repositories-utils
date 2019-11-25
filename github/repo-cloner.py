@@ -11,8 +11,8 @@ def clone_repository(df, output):
     Clone repositories 
     """
     
-    git_url = df['items']['clone_url']
-    project_name = df['items']['full_name']
+    git_url = df['clone_url']
+    project_name = df['full_name']
     
     project_folder = os.path.join(output, project_name)
 
@@ -52,10 +52,10 @@ def repo_cloner(file_name, output):
     # (can use `tqdm_gui`, `tqdm_notebook`, optional kwargs, etc.)
     tqdm.pandas(desc="Progress bar")
 
-    projects = pd.DataFrame(dataset['items'])
+    #projects = pd.DataFrame(dataset['items'])
     
     # Clone the repository for each row of url in the dataframe
-    projects.progress_apply(clone_repository, axis=1, args=(output, ))        
+    dataset.progress_apply(clone_repository, axis=1, args=(output, ))        
     
     pass
 

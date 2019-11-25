@@ -1,7 +1,6 @@
 """
     Script responsible to collect the topics + README file of each project.
-    FIXME: We are currently not using README in our analysis so the enriched dataset
-    is kept in the rawdata folder
+
 """
 
 import pandas as pd
@@ -38,9 +37,18 @@ def add_commits_info(df, projects_dir):
         ret['n_authors'] = len(authors)
         repo.close() # We need to call close() otherwise gitpython leaks resources
 
+    except KeyboardInterrupt as e:
+        raise e
+
     except BlockingIOError:
         print("Error while processing project %s" % name)
         repo.close()
+
+    except Exception:
+        print("Error while processing project %s" % name)
+        pass
+
+    
         
     return pd.Series(ret)
 
