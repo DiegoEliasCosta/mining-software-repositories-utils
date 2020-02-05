@@ -30,12 +30,7 @@ def add_commits_info(df, projects_dir):
         # Getting the commits
         commits = list(repo.iter_commits())
 
-        committers = set([i.committer for i in commits])
-        authors = set([i.author for i in commits])
-
         ret['n_commits'] = len(commits)
-        ret['n_committers'] = len(committers)
-        ret['n_authors'] = len(authors)
         repo.close() # We need to call close() otherwise gitpython leaks resources
 
     except KeyboardInterrupt as e:

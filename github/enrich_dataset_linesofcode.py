@@ -5,7 +5,7 @@ import click
 
 
 import glob 
-def count_lines_of_code(project, dataset_source):
+def count_lines_of_code(project, dataset_source, extension):
     """
         Pythonic style
         Inspects each directory and uses glob to extract all go files
@@ -15,7 +15,7 @@ def count_lines_of_code(project, dataset_source):
     path = dataset_source + project['full_name']
 
     # List all go files
-    files = [f for f in glob.glob(path + "/**/*.go", recursive=True)]
+    files = [f for f in glob.glob(path + "/**/*.%s" % extension, recursive=True)]
     # Remove the vendor ones (dependencies)
     files = [f for f in files if not 'vendor' in f]
 
@@ -29,15 +29,18 @@ def count_lines_of_code(project, dataset_source):
 
     return {'full_name': project_id, 'LOC': num_lines}
 
-# From https://stackoverflow.com/questions/1358540/how-to-count-all-the-lines-of-code-in-a-directory-recursively
-command = "( find ./ -name '*.go' -print0 | xargs -0 cat ) | wc -l"
+
 import subprocess
-def fast_count_lines_of_code(project, dataset_source):
+def fast_count_lines_of_code(project, dataset_source, extension):
     """ 
         OS style - Ask the OS to simply search for all go files
         and return the summed wc -l
         This is a couple of order of magnitudes faster
     """
+
+    # From https://stackoverflow.com/questions/1358540/how-to-count-all-the-lines-of-code-in-a-directory-recursively
+    command = "( find ./ -name '*.%s' -print0 | xargs -0 cat ) | wc -l" % extension
+
     project_id = project['full_name']
     path = dataset_source + project['full_name']
     return pd.Series({"id": project['id'],\
@@ -47,11 +50,12 @@ def fast_count_lines_of_code(project, dataset_source):
 
 @click.command()
 @click.argument("input_file", required=1)
+@click.argument("extension", required=1)
 @click.argument("projects_dir", required=1)
 @click.argument("output_file", required=1)
-def enrich_project_metadata(input_file, projects_dir, output_file):
+def enrich_project_metadata(input_file, extension, projects_dir, output_file):
 
-    print('Reading the pickled input file')
+    print('Reading the csv input file')
     projects_df = pd.read_csv(input_file)
 
     if 'full_name' not in projects_df.columns:
@@ -62,7 +66,7 @@ def enrich_project_metadata(input_file, projects_dir, output_file):
     tqdm.pandas()
 
     print("Initiating the processing of projects")
-    loc_df = projects_df.progress_apply(fast_count_lines_of_code, axis=1, args=(projects_dir,))
+    loc_df = projects_df.progress_apply(fast_count_lines_of_code, axis=1, args=(projects_dir, extension))
 
     print("Writing the output at %s" % output_file)
     loc_df.to_csv(output_file, index=False)
