@@ -45,8 +45,17 @@ def repo_cloner(file_name, output):
 
 
     # Create the dataframe with the content from the JSON returned by GitHub API
-    dataset = pd.read_json(file_name)
-    #dataset = pd.read_pickle(file_name)
+    #dataset = pd.read_json(file_name)
+    # dataset = pd.read_pickle(file_name)
+    dataset = pd.read_csv(file_name)
+
+    if 'full_name' not in dataset.columns:
+        print('Input file does not contain the project full_name...')
+        print('Aborting...')
+        return 
+
+    # dataset = pd.json_normalize(dataset, record_path=['items'])
+    print(dataset.columns)
 
     # Register `pandas.progress_apply` and `pandas.Series.map_apply` with `tqdm`
     # (can use `tqdm_gui`, `tqdm_notebook`, optional kwargs, etc.)

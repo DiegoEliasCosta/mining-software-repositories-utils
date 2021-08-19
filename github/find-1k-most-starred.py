@@ -59,7 +59,7 @@ def find_most_starred_repos(username, password, max_stars, n_pages, language, ou
 def sleep_random():
     from random import randint
     from time import sleep
-    sleep(randint(1,3))
+    sleep(randint(1,5))
 
 
 if __name__ == "__main__":

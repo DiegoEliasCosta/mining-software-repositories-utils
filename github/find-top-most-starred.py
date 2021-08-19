@@ -50,13 +50,20 @@ def find_most_starred_repos(username, password, min_stars, n_pages, language, ou
 
                 else:
                     print('{page} Page Requested failed'.format(page=page))
+                    print(f'{response}')
 
-                sleep_random()
+                sleep_random(3, 5) 
         
         # Update max_stars with the smallest number already requested
         # We don't need to request these projects again
-        max_stars = df['stargazers_count'].min()
+        if max_stars == df['stargazers_count'].min():
+            # FIXME: This is a problem we need a workaround
+            max_stars = max_stars - 1 
+        
+        else:
+            max_stars = df['stargazers_count'].min()
 
+        sleep_random(60, 120)
 
     # We pickle first in case we find some issues with converting to JSON  
     # such as non-unique indexes
@@ -67,10 +74,10 @@ def find_most_starred_repos(username, password, min_stars, n_pages, language, ou
     df.to_json(os.path.join(output, 'moststarred-{language}-projects-{min_stars}.json'.format(language=language, min_stars=min_stars)))
 
 
-def sleep_random():
+def sleep_random(min=30, max=120):
     from random import randint
     from time import sleep
-    sleep(randint(1,3))
+    sleep(randint(min,max))
 
 
 if __name__ == "__main__":
