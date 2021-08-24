@@ -16,7 +16,7 @@ def add_commits_info(df, projects_dir):
     
     # Dict to return the results
     ret = dict()
-    ret['id'] = df['id']
+    # ret['id'] = df.index
     ret['full_name'] = name
     
     # Repo directory 

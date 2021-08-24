@@ -42,7 +42,8 @@ def fast_count_lines_of_code(project, dataset_source, extension):
 
     project_id = project['full_name']
     path = dataset_source + project['full_name']
-    return pd.Series({"id": project['id'],\
+    return pd.Series({
+         "id": project.index,\
         "full_name": project_id,\
         "LOC": int(subprocess.check_output(command, shell=True, cwd=path))})
 
@@ -73,8 +74,8 @@ def cloc_lines_of_code(project, dataset_source, language):
 @click.argument("input_file", required=1)
 @click.argument("projects_dir", required=1)
 @click.argument("output_file", required=1)
-@click.option("--extension", defailt=None, description='Specify the extension as in (java -> .java) for the fastest loc count.')
-@click.option("--language", default=None, description='Only count files of a programming languauge. See cloc --show-lang for support.')
+@click.option("--extension", default=None, help='Specify the extension as in (java -> .java) for the fastest loc count.')
+@click.option("--language", default=None, help='Only count files of a programming languauge. See cloc --show-lang for support.')
 def enrich_project_metadata(input_file, projects_dir, output_file, extension, language):
 
     print('Reading the pickled input file')
@@ -93,7 +94,7 @@ def enrich_project_metadata(input_file, projects_dir, output_file, extension, la
         loc_df = projects_df.progress_apply(cloc_lines_of_code, axis=1, args=(projects_dir, language))
 
     elif extension:
-        loc_df = projects_df.progress_apply(fast_count_lines_of_code, axis=1, args=(projects_dir,))
+        loc_df = projects_df.progress_apply(fast_count_lines_of_code, axis=1, args=(projects_dir,extension))
 
     print("Writing the output at %s" % output_file)
     loc_df.to_csv(output_file, index=False)
